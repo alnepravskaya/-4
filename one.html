@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<style>
+    body {
+        font-family: sans-serif;
+    }
+
+    iframe {
+        width: 300px;
+        height: 50px;
+        border: 0;
+    }
+
+    b, input {
+        display: block;
+    }
+
+    form {
+        display: inline-block;
+        vertical-align: top;
+        margin: 0 20px;
+    }
+
+    fieldset {
+        width: 100px;
+        padding: 0 10px;
+    }
+
+
+</style>
+<iframe src="two.html">
+
+</iframe>
+
+
+<div>
+    <form id="setForm" action="post">
+        <fieldset>
+            <legend> Set date</legend>
+            <p><label>key</label><input type="text" name="key" required></p>
+            <p><label>value</label><input type="text" name="value" required></p>
+            <p><input type="submit" value="Set Date"></p>
+        </fieldset>
+    </form>
+
+
+    <form id="deleteForm" action="post">
+        <fieldset>
+            <legend> Delete date</legend>
+            <p><label>key</label><input type="text" name="key" required></p>
+            <p><input type="submit" value="Delete Date"></p>
+        </fieldset>
+    </form>
+
+    <form id="getForm" action="post">
+        <fieldset>
+            <legend> Get date</legend>
+            <p><label>key</label><input type="text" name="key" required></p>
+            <p><input type="submit" value="Get Date"></p>
+            <label>Answer:</label>
+            <div id="text"></div>
+        </fieldset>
+    </form>
+</div>
+
+</body>
+<script>
+    var iframe = window.open("two.html");
+    var key = "";
+    var value = ""
+    document.getElementById("setForm").addEventListener("submit", function (e) {
+        e.preventDefault()
+        key = document.querySelector('#setForm [name="key"]').value
+        value = document.querySelector('#setForm [name="value"]').value
+            iframe.postMessage({
+                "method": "set",
+                "key": key,
+                "value": value
+            }, "*")
+        console.log("written" +" "+ key+ ":" + value )
+
+    }, false)
+
+    document.getElementById("getForm").addEventListener("submit", function (e) {
+        e.preventDefault()
+
+            iframe.postMessage({
+            "method": "get",
+            "key": document.querySelector('#getForm [name="key"]').value,
+        }, "*")
+
+
+    }, false)
+
+    document.getElementById("deleteForm").addEventListener("submit", function (e) {
+        e.preventDefault()
+        key = document.querySelector('#deleteForm [name="key"]').value
+        iframe.postMessage({
+            "method": "delete",
+            "key": key,
+        }, "*")
+        console.log("removed" +" "+ key)
+    }, false)
+
+
+    function receiveMessage(event) {
+        document.getElementById("text").innerText = JSON.stringify(event.data.value)
+    }
+
+    window.addEventListener("message", receiveMessage, false);
+
+
+</script>
+</html>
